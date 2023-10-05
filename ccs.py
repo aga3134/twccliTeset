@@ -27,9 +27,22 @@ def CreateCCS():
     print(output)
     return output["id"]
 
-def DeleteCCS(id):
+def RunCommand(ccsID, cmd):
+    print("run command "+cmd)
+    sshInfo = f"twccli ls ccs -gssh -s {ccsID}".split(" ")
+    result = subprocess.run(sshInfo, stdout=subprocess.PIPE)
+    sshInfo = result.stdout.decode('utf-8').strip()
+    print(sshInfo)
+    sshCmd = f"ssh -t -o StrictHostKeyChecking=no {sshInfo}"
+    sshCmd = sshCmd.split(" ")+["/bin/bash "+cmd]
+    print(sshCmd)
+    result = subprocess.run(sshCmd, stdout=subprocess.PIPE)
+    output = result.stdout.decode('utf-8')
+    print(output)
+
+def DeleteCCS(ccsID):
     print(f"delete ccs {id}")
-    cmd = f"twccli rm ccs -f -s {id}"
+    cmd = f"twccli rm ccs -f -s {ccsID}"
     result = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     print(output)
@@ -38,5 +51,6 @@ if __name__ == "__main__":
     ListCCS(0)
     ccsID = CreateCCS()
     ListCCS(30)
+    RunCommand(ccsID, "./out.sh")
     DeleteCCS(ccsID)
     ListCCS(60)
