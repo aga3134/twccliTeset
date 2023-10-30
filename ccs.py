@@ -1,6 +1,13 @@
 import subprocess
 import time
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+iType = os.getenv("CCS_ITYPE")
+gpuNum = os.getenv("CCS_GPU_NUM")
 
 def ListCCS(waitTime):
     print("wait for "+str(waitTime)+" secs")
@@ -20,7 +27,7 @@ def ListCCS(waitTime):
 
 def CreateCCS():
     print("create ccs")
-    cmd = "twccli mk ccs -itype PyTorch -gpu 1 -wait -json"
+    cmd = f"twccli mk ccs -itype {iType} -gpu {gpuNum} -wait -json"
     result = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
     output = result.stdout.decode('utf-8')
     output = json.loads(output)
